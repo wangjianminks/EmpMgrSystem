@@ -3,7 +3,7 @@
  *作者 ：WangJianmin
  *建立时间：2017年11月30日
  */
-package com.cheer.servlet;
+package com.cheer.web.servlet;
 
 import java.io.IOException;
 import java.sql.Connection;

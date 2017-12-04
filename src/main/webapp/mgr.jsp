@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=utf-8" pageEncoding="utf-8"%>
 <!DOCTYPE html>
-<%@ page import="com.cheer.domain.Emp,com.cheer.util.DBHelper,java.sql.*,java.util.*"%>
+<%@ page import="com.cheer.domain.*,com.cheer.util.*,com.cheer.service.*,com.cheer.web.servlet.*,java.sql.*,java.util.*,java.text.*"%>
+<%@taglib uri="http://java.sun.com/jsp/jstl/core"  prefix="c"%>
 <html>
 <head>
 <title>首页</title>
@@ -33,83 +34,54 @@
 <body>
 <form method="post">
 
- <%
- 	DBHelper db = DBHelper.getInstance();
-   Connection conn=null;
-   PreparedStatement pstmt=null;
-   ResultSet rs=null;
-  %>
-  <%
-    try
-    {
-	conn = db.getConnection();
-      String sql="SELECT * FROM tbl_emp";
-      pstmt=conn.prepareStatement(sql);
-      rs=pstmt.executeQuery();
-   %>
+
 <div id="menu">
 <!-- onclick="window.loction.href='  ' "-->
 <a href="http://localhost:8080/EmpMgrSystem/inster.jsp">增加新员工</a>
 </div>
+
+
+		
    <table border="1" cellspacing="0" align="center" >
    <tr>
    <td>雇员编号</td>
    <td>雇员姓名</td>
    <td>雇员工作</td>
+   <td>上司</td>
+   <td>雇员日期</td>
     <td>雇员工资</td>
-    <td>雇员日期</td>
+    <td>奖金</td>
     <th>操作</th>
 </tr>
 <%
-List<Emp> list = new ArrayList<>();
+		    EmpService empService = (EmpService)application.getAttribute("empService");
 
-    while(rs.next())
-    {
-     int empno=rs.getInt("empno");
-     String ename=rs.getString("ename");
-     String job=rs.getString("job");
-     double sal=rs.getDouble("sal");
-     java.util.Date  date=rs.getDate("hiredate");
-     
-     list.add(new Emp(empno, ename, job,date,sal));
-    }
-    session.setAttribute("list",list);
-    for(Emp e : (List<Emp>)session.getAttribute("list"))
-    {
-    %>
+		    SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		    
+		    request.setAttribute("empList", empService.getAll());
+		%>
+<c:forEach var="emp" items="${empList }">
 <tr>
-<td><%=e.getEmpno() %></td>
-		<td><%=e.getEname() %></td>
-		<td><%=e.getJob() %></td>
-		<td><%=e.getHiredate() %></td>
-		<td><%=e.getSal() %></td>
+	<td>${emp.empno}</td>
+		<td>${emp.ename }</td>
+		<td>${emp.job }</td>
+		<td>${emp.mgr }</td>
+		<td>${emp.hiredate }</td>
+		<td>${emp.sal }</td>
+		<td>${emp.comm }</td>
 <td>
-<a href="servlet/mgrSystem?empno=<%=e.getEmpno() %>">删除</a>
+<a href="servlet/mgrSystem?empno=${emp.empno }">删除</a>
 &nbsp;
-<a href="update.jsp?empno=<%=e.getEmpno() %>">修改</a>
+<a href="update.jsp?empno=${emp.empno }">修改</a>
 </td>
 </tr>
-<%
-    }
-   %>
+</c:forEach>
+
  <!--  <tr>
    <td colspan=6> <a href=">插入新数据</a></td>
    </tr> -->
    </table>
 
-   <%
-   }
-     catch(Exception e)
-      {
-         System.out.println(e);
-      }
-  finally
-      {
-    	  DBHelper.closeResultSet(rs);
-    	  DBHelper.closeStatement(pstmt);
-    	  DBHelper.closeConnection(conn);
-       }
-    %>
 
 </form>
 </body>

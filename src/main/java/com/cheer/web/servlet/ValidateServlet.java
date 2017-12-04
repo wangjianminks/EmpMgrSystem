@@ -1,4 +1,4 @@
-package com.cheer.servlet;
+package com.cheer.web.servlet;
 
 
 import java.io.IOException;
